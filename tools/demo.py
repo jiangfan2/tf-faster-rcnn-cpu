@@ -11,6 +11,10 @@ Demo script showing detections in sample images.
 
 See README.md for installation instructions before running.
 """
+
+#changed by zzq.kidtic
+
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -54,7 +58,7 @@ def vis_detections(class_name, dets, thresh=0.5):
     return retRightDect
 
 # func demo return detc_score>CONF_THRESH
-def demo(sess, net, image,CONF_THRESH = 0.8,NMS_THRESH = 0.3):
+def im_Detect_Highscore(sess, net, image,CONF_THRESH = 0.8,NMS_THRESH = 0.3):
     """Detect object classes in an image using pre-computed object proposals."""
     im=image
     # Detect all object classes and regress object bounds
