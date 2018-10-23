@@ -151,7 +151,7 @@ if __name__ == '__main__':
         im = cv2.imread(im_file)
 
         # get the class,box and score in this image
-        imgclassbox=demo(sess, net, im,thresh_score)
+        imgclassbox=im_Detect_Highscore(sess, net, im,thresh_score)
 
         #show the image and the classes
         im = im[:, :, (2, 1, 0)]
