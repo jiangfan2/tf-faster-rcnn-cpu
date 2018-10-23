@@ -67,6 +67,7 @@ def im_Detect_Highscore(sess, net, image,CONF_THRESH = 0.8,NMS_THRESH = 0.3):
     scores, boxes = im_detect(sess, net, im)
     timer.toc()
     print('Detection took {:.3f}s for {:d} object proposals'.format(timer.total_time, boxes.shape[0]))
+    print('okokzzqtestgithub')
 
     # get a list of all high score classbox
     # if the classbox's score > CONF_THRESH, than this classbox will add the imageAllClass
