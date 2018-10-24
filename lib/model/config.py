@@ -8,6 +8,8 @@ import numpy as np
 # `pip install easydict` if you don't have it
 from easydict import EasyDict as edict
 
+GPU_USE_CONFIG_DF=True
+
 __C = edict()
 # Consumers can get config by:
 #   from fast_rcnn_config import cfg
@@ -267,7 +269,7 @@ __C.MATLAB = 'matlab'
 __C.EXP_DIR = 'default'
 
 # Use GPU implementation of non-maximum suppression
-__C.USE_GPU_NMS = False
+__C.USE_GPU_NMS = GPU_USE_CONFIG_DF
 
 # Use an end-to-end tensorflow model.
 # Note: models in E2E tensorflow mode have only been tested in feed-forward mode,

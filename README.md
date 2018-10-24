@@ -3,27 +3,39 @@ Xinlei Chen's tf-faster-rcnn work with cpu.
 and changed by kidtic . 
 
 ## CPU运行方法
-将tf-faster-rcnn 改成cpu运行需要更改3个地方：
-1. 将lib/model/config.py 270行 “__C.USE_GPU_NMS = True” 改成“__C.USE_GPU_NMS = False”
-2. 将lib/setup.py 注释掉CUDA = locate_cuda()
-3. 将lib/setup.py 中以下代码段注释调
+tf-faster-rcnn-cpu支持cpu和gpu运行,原来需要更改3处地方的文件来切换cpu使用，现在只需要更改一处地方即可：
+1. 将lib/model/config.py中 GPU_USE_CONFIG_DF设置成False
+
+
+然后编译lib库即可
+
+## 安装方法
+1.克隆
+```buildoutcfg 
+git clone https://github.com/kidtic/tf-faster-rcnn-cpu.git
 ```
-    Extension('nms.gpu_nms',
-        ['nms/nms_kernel.cu', 'nms/gpu_nms.pyx'],
-        library_dirs=[CUDA['lib64']],
-        libraries=['cudart'],
-        language='c++',
-        runtime_library_dirs=[CUDA['lib64']],
-        # this syntax is specific to this build system
-        # we're only going to use certain compiler args with nvcc and not with gcc
-        # the implementation of this trick is in customize_compiler() below
-        extra_compile_args={'gcc': ["-Wno-unused-function"],
-                            'nvcc': ['-arch=sm_52',
-                                     '--ptxas-options=-v',
-                                     '-c',
-                                     '--compiler-options',
-                                     "'-fPIC'"]},
-        include_dirs = [numpy_include, CUDA['include']]
-    )
+2.修改你的gpu架构
+```
+cd tf-faster-rcnn/lib
+# Change the GPU architecture (-arch) if necessary
+vim setup.py
+```
+3.编译lib
+```
+make clean
+make
+cd ..
+```
+4.运行cocoAPI
+```
+./cocoAPI.sh
 ```
 
+## 运行demo并测试预训练模型
+1. [下载](https://pan.baidu.com/s/1lcTYvckpk_nsj2H2JECVrw)模型
+2. 将模型放到文件夹```/output/res101 ```下
+3. 运行demo
+```
+GPU_ID=0
+CUDA_VISIBLE_DEVICES=${GPU_ID} ./tools/demo.py
+```

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# -*- coding:utf-8 -*-
 
 # --------------------------------------------------------
 # Tensorflow Faster R-CNN
@@ -46,7 +46,6 @@ NETS = {'vgg16': ('vgg16_faster_rcnn_iter_70000.ckpt',),'res101': ('res101_faste
 DATASETS= {'pascal_voc': ('voc_2007_trainval',),'pascal_voc_0712': ('voc_2007_trainval+voc_2012_trainval',)}
 
 def vis_detections(class_name, dets, thresh=0.5):
-    """Draw detected bounding boxes."""
     inds = np.where(dets[:, -1] >= thresh)[0]
     if len(inds) == 0:
         return
@@ -58,7 +57,11 @@ def vis_detections(class_name, dets, thresh=0.5):
         retRightDect.append(dictScoreBox)
     return retRightDect
 
-# func demo return detc_score>CONF_THRESH
+#-----------------------------------------------------
+# 函数名：im_Detect_Highscore
+# 内容：返回image图片里面识别分数高于CONF_THRESH的classbox
+# 输出：一个列表，列表元素为字典{'class','box','score'}
+#-----------------------------------------------------
 def im_Detect_Highscore(sess, net, image,CONF_THRESH = 0.8,NMS_THRESH = 0.3):
     """Detect object classes in an image using pre-computed object proposals."""
     im=image

@@ -40,8 +40,9 @@ def locate_cuda():
         default_path = pjoin(os.sep, 'usr', 'local', 'cuda', 'bin')
         nvcc = find_in_path('nvcc', os.environ['PATH'] + os.pathsep + default_path)
         if nvcc is None:
-            raise EnvironmentError('The nvcc binary could not be '
+            print('error:The nvcc binary could not be '
                 'located in your $PATH. Either add it to your path, or set $CUDAHOME')
+            return 0
         home = os.path.dirname(os.path.dirname(nvcc))
 
     cudaconfig = {'home':home, 'nvcc':nvcc,
@@ -52,7 +53,7 @@ def locate_cuda():
             raise EnvironmentError('The CUDA %s path could not be located in %s' % (k, v))
 
     return cudaconfig
-#CUDA = locate_cuda()
+CUDA = locate_cuda()
 
 # Obtain the numpy include directory.  This logic works across numpy versions.
 try:
@@ -104,20 +105,53 @@ class custom_build_ext(build_ext):
         customize_compiler_for_nvcc(self.compiler)
         build_ext.build_extensions(self)
 
-ext_modules = [
-    Extension(
-        "utils.cython_bbox",
-        ["utils/bbox.pyx"],
-        extra_compile_args={'gcc': ["-Wno-cpp", "-Wno-unused-function"]},
-        include_dirs = [numpy_include]
-    ),
-    Extension(
-        "nms.cpu_nms",
-        ["nms/cpu_nms.pyx"],
-        extra_compile_args={'gcc': ["-Wno-cpp", "-Wno-unused-function"]},
-        include_dirs = [numpy_include]
-    )
-]
+if (CUDA == 0):
+    ext_modules = [
+        Extension(
+            "utils.cython_bbox",
+            ["utils/bbox.pyx"],
+            extra_compile_args={'gcc': ["-Wno-cpp", "-Wno-unused-function"]},
+            include_dirs=[numpy_include]
+        ),
+        Extension(
+            "nms.cpu_nms",
+            ["nms/cpu_nms.pyx"],
+            extra_compile_args={'gcc': ["-Wno-cpp", "-Wno-unused-function"]},
+            include_dirs=[numpy_include]
+        )
+    ]
+else:
+    ext_modules = [
+        Extension(
+            "utils.cython_bbox",
+            ["utils/bbox.pyx"],
+            extra_compile_args={'gcc': ["-Wno-cpp", "-Wno-unused-function"]},
+            include_dirs = [numpy_include]
+        ),
+        Extension(
+            "nms.cpu_nms",
+            ["nms/cpu_nms.pyx"],
+            extra_compile_args={'gcc': ["-Wno-cpp", "-Wno-unused-function"]},
+            include_dirs = [numpy_include]
+        ),
+        Extension('nms.gpu_nms',
+            ['nms/nms_kernel.cu', 'nms/gpu_nms.pyx'],
+            library_dirs=[CUDA['lib64']],
+            libraries=['cudart'],
+            language='c++',
+            runtime_library_dirs=[CUDA['lib64']],
+            # this syntax is specific to this build system
+            # we're only going to use certain compiler args with nvcc and not with gcc
+            # the implementation of this trick is in customize_compiler() below
+            extra_compile_args={'gcc': ["-Wno-unused-function"],
+                                'nvcc': ['-arch=sm_61',
+                                         '--ptxas-options=-v',
+                                         '-c',
+                                         '--compiler-options',
+                                         "'-fPIC'"]},
+            include_dirs = [numpy_include, CUDA['include']]
+        )
+    ]
 
 setup(
     name='tf_faster_rcnn',
