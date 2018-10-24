@@ -146,8 +146,8 @@ if __name__ == '__main__':
 
 
     # input the image
-    im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
-                '001763.jpg', '004545.jpg']
+    im_names = ['000456.jpg', '001150.jpg','004545.jpg','dog.jpg',
+                'bicycle.jpg','car.jpg','dogcat.jpg','myhome.jpg','tv.jpg']
     for im_name in im_names:
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print('Demo for data/demo/{}'.format(im_name))
