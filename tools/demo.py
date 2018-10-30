@@ -160,25 +160,22 @@ if __name__ == '__main__':
         imgclassbox=im_Detect_Highscore(sess, net, im,thresh_score)
 
         #show the image and the classes
-        im = im[:, :, (2, 1, 0)]
-        fig, ax = plt.subplots(figsize=(12, 12))
-        ax.imshow(im, aspect='equal')
+        img=im
         for i_classbox in imgclassbox:
-            ax.add_patch(
-                plt.Rectangle((i_classbox['box'][0], i_classbox['box'][1]),
-                              i_classbox['box'][2] - i_classbox['box'][0],
-                              i_classbox['box'][3] - i_classbox['box'][1], fill=False,
-                              edgecolor='red', linewidth=3.5)
-            )
-            ax.text(i_classbox['box'][0], i_classbox['box'][1] - 2,
-                    '{:s} {:.3f}'.format(i_classbox['class'], i_classbox['score']),
-                    bbox=dict(facecolor='blue', alpha=0.5),
-                    fontsize=14, color='white')
-        ax.set_title(('{} detections with '
-                      'p({} | box) >= {:.1f}').format(i_classbox['class'],i_classbox['class'],thresh_score),
-                     fontsize=14)
-        plt.axis('off')
-        plt.tight_layout()
-        plt.draw()
+            cv2.rectangle(img,
+                          (i_classbox['box'][0], i_classbox['box'][1]),
+                          (i_classbox['box'][2], i_classbox['box'][3]),
+                          (0, 0, 255),
+                          3)
+            # 将文字框加入到图片中，(5,20)定义了文字框左顶点在窗口中的位置，最后参数定义文字颜色
+            cv2.putText(img, i_classbox['class'], (i_classbox['box'][0], i_classbox['box'][1]),
+                        cv2.FONT_HERSHEY_PLAIN,
+                        2.0,
+                        (0, 255, 0),
+                        2
+                        )
+        cv2.imshow(i_classbox['class'],img)
+    cv2.waitKey(0)
 
-    plt.show()
+
+
