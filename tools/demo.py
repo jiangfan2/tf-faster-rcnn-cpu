@@ -42,8 +42,9 @@ CLASSES = ('__background__',
            'motorbike', 'person', 'pottedplant',
            'sheep', 'sofa', 'train', 'tvmonitor')
 
-NETS = {'vgg16': ('vgg16_faster_rcnn_iter_70000.ckpt',),'res101': ('res101_faster_rcnn_iter_110000.ckpt',)}
+NETS = {'vgg16': ('vgg16_faster_rcnn_iter_',),'res101': ('res101_faster_rcnn_iter_',)}
 DATASETS= {'pascal_voc': ('voc_2007_trainval',),'pascal_voc_0712': ('voc_2007_trainval+voc_2012_trainval',)}
+ITERNUM=['70000','110000']
 
 def vis_detections(class_name, dets, thresh=0.5):
     inds = np.where(dets[:, -1] >= thresh)[0]
@@ -102,6 +103,8 @@ def parse_args():
                         choices=NETS.keys(), default='res101')
     parser.add_argument('--dataset', dest='dataset', help='Trained dataset [pascal_voc pascal_voc_0712]',
                         choices=DATASETS.keys(), default='pascal_voc_0712')
+    parser.add_argument('--iter',dest='iter',help='iter use [70000 110000]',
+                        choices=ITERNUM,default='70000')
     args = parser.parse_args()
 
     return args
@@ -116,9 +119,11 @@ if __name__ == '__main__':
     # model path
     demonet = args.demo_net
     dataset = args.dataset
+    modeliter = args.iter
     # zzq must add "os.getcwd()/.." in pycharm
+
     tfmodel = os.path.join(os.getcwd(),'..','output', demonet, DATASETS[dataset][0], 'default',
-                              NETS[demonet][0])
+                              NETS[demonet][0]+modeliter+'.ckpt')
 
     if not os.path.isfile(tfmodel + '.meta'):
         raise IOError(('{:s} not found.\nDid you download the proper networks from '
